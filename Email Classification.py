@@ -1,6 +1,8 @@
 import pandas as pd
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
+from nltk import stem
+
 from nltk import pos_tag, word_tokenize
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -11,29 +13,16 @@ data = pd.read_csv("spam.csv", encoding = "latin-1")
 data = data[['v1', 'v2']]
 data = data.rename(columns = {'v1': 'label', 'v2': 'text'})
 
-lemmatizer = WordNetLemmatizer()
+stemmer = stem.SnowballStemmer('english')
 stopwords = set(stopwords.words('english'))
 
 def review_messages(msg):
     # converting messages to lowercase
     msg = msg.lower()
-    return msg
-
-def alternative_review_messages(msg):
-    # converting messages to lowercase
-    msg = msg.lower()
-
-    # uses a lemmatizer (wnpos is the parts of speech tag)
-    # unfortunately wordnet and nltk uses a different set of terminology for pos tags
-    # first, we must translate the nltk pos to wordnet
-    nltk_pos = [tag[1] for tag in pos_tag(word_tokenize(msg))]
-    msg = [tag[0] for tag in pos_tag(word_tokenize(msg))]
-    wnpos = ['a' if tag[0] == 'J' else tag[0].lower() if tag[0] in ['N', 'R', 'V'] else 'n' for tag in nltk_pos]
-    msg = " ".join([lemmatizer.lemmatize(word, wnpos[i]) for i, word in enumerate(msg)])
-
-    # removing stopwords 
+    # removing stopwords
     msg = [word for word in msg.split() if word not in stopwords]
-
+    # using a stemmer
+    msg = " ".join([stemmer.stem(word) for word in msg])
     return msg
 
 # Processing text messages
@@ -53,10 +42,5 @@ svm.fit(X_train, y_train)
 # testing against testing set 
 X_test = vectorizer.transform(X_test)
 y_pred = svm.predict(X_test) 
-print(confusion_matrix(y_test, y_pred))
+cm= confusion_matrix(y_test, y_pred)
 
-# test against new messages 
-def pred(msg):
-    msg = vectorizer.transform([msg])
-    prediction = svm.predict(msg)
-    return prediction[0]
