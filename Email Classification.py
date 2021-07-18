@@ -1,15 +1,12 @@
 import pandas as pd
-from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 from nltk import stem
-
-from nltk import pos_tag, word_tokenize
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import svm
 from sklearn.metrics import confusion_matrix
 
-data = pd.read_csv("spam.csv", encoding = "latin-1")
+data = pd.read_csv("spam.csv")
 data = data[['v1', 'v2']]
 data = data.rename(columns = {'v1': 'label', 'v2': 'text'})
 
