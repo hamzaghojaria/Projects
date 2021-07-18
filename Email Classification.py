@@ -5,12 +5,13 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import svm
 from sklearn.metrics import confusion_matrix
+from nltk.stem.porter import PorterStemmer
 
 data = pd.read_csv("spam.csv")
 data = data[['v1', 'v2']]
 data = data.rename(columns = {'v1': 'label', 'v2': 'text'})
 
-stemmer = stem.SnowballStemmer('english')
+ps = PorterStemmer()
 stopwords = set(stopwords.words('english'))
 
 def review_messages(msg):
@@ -19,7 +20,7 @@ def review_messages(msg):
     # removing stopwords
     msg = [word for word in msg.split() if word not in stopwords]
     # using a stemmer
-    msg = " ".join([stemmer.stem(word) for word in msg])
+    msg = " ".join([ps.stem(word) for word in msg])
     return msg
 
 # Processing text messages
