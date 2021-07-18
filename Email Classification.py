@@ -17,8 +17,9 @@ stopwords = set(stopwords.words('english'))
 def review_messages(msg):
     # converting messages to lowercase
     msg = msg.lower()
+    msg = msg.split()
     # removing stopwords
-    msg = [word for word in msg.split() if word not in stopwords]
+    msg = [word for word in msg if word not in stopwords]
     # using a stemmer
     msg = " ".join([ps.stem(word) for word in msg])
     return msg
